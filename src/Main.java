@@ -8,7 +8,7 @@ public class Main {
     private static final IngredientService ingredientService = new IngredientService();
 
     public static void main(String[] args) {
-
+        addSampleData();
         boolean exit = false;
         while (!exit) {
             printMainMenu();
@@ -419,4 +419,36 @@ public class Main {
             }
         }
     }
+
+    private static void addSampleData() {
+
+        Ingredient egg = new Ingredient("Egg", 2, 78, 6, 1, 5);
+        Ingredient milk = new Ingredient("Milk", 200, 42, 3.4, 5, 1);
+        Ingredient flour = new Ingredient("Flour", 100, 364, 10, 76, 1);
+        Ingredient sugar = new Ingredient("Sugar", 50, 387, 0, 100, 0);
+
+        ingredientService.addOrUpdateIngredient(egg);
+        ingredientService.addOrUpdateIngredient(milk);
+        ingredientService.addOrUpdateIngredient(flour);
+        ingredientService.addOrUpdateIngredient(sugar);
+
+        List<Ingredient> pancakeIngredients = Arrays.asList(
+                new Ingredient("Egg", 2, 78, 6, 1, 5),
+                new Ingredient("Milk", 200, 42, 3.4, 5, 1),
+                new Ingredient("Flour", 100, 364, 10, 76, 1),
+                new Ingredient("Sugar", 20, 387, 0, 100, 0)
+        );
+
+        List<String> pancakeSteps = Arrays.asList(
+                "Mix all ingredients together.",
+                "Heat a pan and pour batter.",
+                "Cook until golden brown on both sides."
+        );
+
+        Set<String> pancakeTags = new HashSet<>(Arrays.asList("breakfast", "sweet", "easy"));
+        Recipe pancake = new Recipe("Pancake", pancakeIngredients, pancakeSteps, 350, pancakeTags);
+
+        recipeService.addRecipe(pancake);
+    }
+
 }
