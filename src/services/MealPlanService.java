@@ -18,7 +18,7 @@ public class MealPlanService {
         List<Recipe> filtered = new ArrayList<>();
         int totalCalories = 0;
         for (Recipe recipe : recipes) {
-            if (recipe.getTags().containsAll(requiredTags) && (totalCalories + recipe.getCalories() <= calorieLimit)) {
+            if (!Collections.disjoint(recipe.getTags(), requiredTags) && (totalCalories + recipe.getCalories() <= calorieLimit)) {
                 filtered.add(recipe);
                 totalCalories += recipe.getCalories();
             }

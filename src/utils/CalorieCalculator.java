@@ -10,7 +10,9 @@ public class CalorieCalculator {
     }
 
     public static double recommendPortionSize(Recipe recipe, int calorieLimit) {
-        if (recipe.getCalories() == 0) return 0;
+        if (recipe.getCalories() == 0) {
+            return 0;
+        }
         double portion = (double) calorieLimit / recipe.getCalories();
         return Math.min(1.0, portion); // Do not recommend more than 1 portion
     }

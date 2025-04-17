@@ -6,13 +6,14 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final RecipeService recipeService = new RecipeService();
     private static final IngredientService ingredientService = new IngredientService();
+    private static final MealPlanService mealPlanService = new MealPlanService();
 
     public static void main(String[] args) {
         addSampleData();
         boolean exit = false;
         while (!exit) {
             printMainMenu();
-            int choice = getUserChoice();
+            int choice = getValidatedIntInput();
             switch (choice) {
                 case 1:
                     addRecipe();
@@ -33,8 +34,7 @@ public class Main {
                     ingredientManagementMenu();
                     break;
                 case 7:
-                    // Placeholder: MealPlanService integration
-                    System.out.println("Meal plan management coming soon...");
+                    mealPlanManagementMenu();
                     break;
                 case 0:
                     exit = true;
@@ -55,19 +55,19 @@ public class Main {
         System.out.println("4. View All Recipes");
         System.out.println("5. Search for Recipe");
         System.out.println("6. Ingredient Management");
-        System.out.println("7. Meal Plan Management (coming soon)");
+        System.out.println("7. Meal Plan Management");
         System.out.println("0. Exit");
         System.out.print("Choose an option: ");
     }
 
-    private static int getUserChoice() {
+    private static int getValidatedIntInput() {
         while (!scanner.hasNextInt()) {
             System.out.print("Please enter a valid number: ");
             scanner.next();
         }
-        int choice = scanner.nextInt();
-        scanner.nextLine(); 
-        return choice;
+        int value = scanner.nextInt();
+        scanner.nextLine();
+        return value;
     }
 
     private static void addRecipe() {
@@ -75,7 +75,7 @@ public class Main {
         System.out.print("Enter recipe name: ");
         String name = scanner.nextLine();
         System.out.print("Enter calories: ");
-        int calories = getIntInput();
+        int calories = getValidatedIntInput();
         System.out.print("Enter tags (comma separated): ");
         String tagsInput = scanner.nextLine();
         Set<String> tags = new HashSet<>(Arrays.asList(tagsInput.split(",\\s*")));
@@ -101,7 +101,7 @@ public class Main {
         }
         viewAllRecipes();
         System.out.print("Enter recipe number to edit: ");
-        int index = getIntInput() - 1;
+        int index = getValidatedIntInput() - 1;
         if (index < 0 || index >= recipes.size()) {
             System.out.println("Invalid recipe number.");
             return;
@@ -109,7 +109,7 @@ public class Main {
         System.out.print("Enter new recipe name: ");
         String name = scanner.nextLine();
         System.out.print("Enter new calories: ");
-        int calories = getIntInput();
+        int calories = getValidatedIntInput();
         System.out.print("Enter new tags (comma separated): ");
         String tagsInput = scanner.nextLine();
         Set<String> tags = new HashSet<>(Arrays.asList(tagsInput.split(",\s*")));
@@ -129,7 +129,7 @@ public class Main {
         }
         viewAllRecipes();
         System.out.print("Enter recipe number to delete: ");
-        int index = getIntInput() - 1;
+        int index = getValidatedIntInput() - 1;
         if (index < 0 || index >= recipes.size()) {
             System.out.println("Invalid recipe number.");
             return;
@@ -202,8 +202,8 @@ public class Main {
             if(recipeName.contains(searchTerm)){
                 System.out.println(recipeNum + ". " + recipe.getName());
                 matches.add(recipe);
+                recipeNum++;
             }
-            recipeNum++;
         };
         
         if(matches.isEmpty()){
@@ -349,8 +349,8 @@ public class Main {
             if (ingredientName.contains(searchTerm)) {
                 System.out.println(ingNum + ". " + ingredient.getName());
                 matches.add(ingredient);
+                ingNum++;
             }
-            ingNum++;
         }
     
         if (matches.isEmpty()) {
@@ -397,7 +397,7 @@ public class Main {
             System.out.println("4. Remove Ingredient");
             System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
-            int choice = getUserChoice();
+            int choice = getValidatedIntInput();
             switch (choice) {
                 case 1:
                     addIngredient();
@@ -421,34 +421,185 @@ public class Main {
     }
 
     private static void addSampleData() {
-
         Ingredient egg = new Ingredient("Egg", 2, 78, 6, 1, 5);
         Ingredient milk = new Ingredient("Milk", 200, 42, 3.4, 5, 1);
         Ingredient flour = new Ingredient("Flour", 100, 364, 10, 76, 1);
         Ingredient sugar = new Ingredient("Sugar", 50, 387, 0, 100, 0);
-
+    
         ingredientService.addOrUpdateIngredient(egg);
         ingredientService.addOrUpdateIngredient(milk);
         ingredientService.addOrUpdateIngredient(flour);
         ingredientService.addOrUpdateIngredient(sugar);
-
+    
         List<Ingredient> pancakeIngredients = Arrays.asList(
                 new Ingredient("Egg", 2, 78, 6, 1, 5),
                 new Ingredient("Milk", 200, 42, 3.4, 5, 1),
                 new Ingredient("Flour", 100, 364, 10, 76, 1),
                 new Ingredient("Sugar", 20, 387, 0, 100, 0)
         );
-
+    
         List<String> pancakeSteps = Arrays.asList(
                 "Mix all ingredients together.",
                 "Heat a pan and pour batter.",
                 "Cook until golden brown on both sides."
         );
-
+    
         Set<String> pancakeTags = new HashSet<>(Arrays.asList("breakfast", "sweet", "easy"));
         Recipe pancake = new Recipe("Pancake", pancakeIngredients, pancakeSteps, 350, pancakeTags);
-
+    
         recipeService.addRecipe(pancake);
+    
+        List<Ingredient> omeletteIngredients = Arrays.asList(
+                new Ingredient("Egg", 3, 78, 6, 1, 5),
+                new Ingredient("Milk", 50, 42, 3.4, 5, 1)
+        );
+    
+        List<String> omeletteSteps = Arrays.asList(
+                "Beat eggs with milk.",
+                "Pour mixture into a heated pan.",
+                "Cook until set."
+        );
+    
+        Set<String> omeletteTags = new HashSet<>(Arrays.asList("breakfast", "protein-rich"));
+        Recipe omelette = new Recipe("Omelette", omeletteIngredients, omeletteSteps, 250, omeletteTags);
+    
+        recipeService.addRecipe(omelette);
+
+        List<Ingredient> smoothieIngredients = Arrays.asList(
+                new Ingredient("Milk", 200, 42, 3.4, 5, 1),
+                new Ingredient("Sugar", 10, 387, 0, 100, 0)
+        );
+    
+        List<String> smoothieSteps = Arrays.asList(
+                "Blend milk and sugar together.",
+                "Serve chilled."
+        );
+    
+        Set<String> smoothieTags = new HashSet<>(Arrays.asList("drink", "sweet", "refreshing"));
+        Recipe smoothie = new Recipe("Smoothie", smoothieIngredients, smoothieSteps, 150, smoothieTags);
+    
+        recipeService.addRecipe(smoothie);
     }
 
+    private static void mealPlanManagementMenu() {
+        boolean back = false;
+        while (!back) {
+            System.out.println("\n--- Meal Plan Management ---");
+            System.out.println("1. Generate Daily Meal Plan");
+            System.out.println("2. Generate Weekly Meal Plan");
+            System.out.println("3. View All Recipes");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = getValidatedIntInput();
+            switch (choice) {
+                case 1:
+                    generateDailyMealPlan();
+                    break;
+                case 2:
+                    generateWeeklyMealPlan();
+                    break;
+                case 3:
+                    viewAllRecipes();
+                    break;
+                case 0:
+                    back = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static Set<String> promptForMealPlanTags() {
+        System.out.print("Enter required tags (comma separated, or leave blank): ");
+        String tagsInput = scanner.nextLine();
+        Set<String> requiredTags = new HashSet<>();
+        if (!tagsInput.trim().isEmpty()) {
+            requiredTags.addAll(Arrays.asList(tagsInput.split(",\\s*")));
+        }
+        return requiredTags;
+    }
+
+    private static void displayMealPlanInfo(MealPlan plan, int calorieLimit) {
+        System.out.println("\n==== Meal Plan: " + plan.getName() + " ====");
+        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(plan.getRecipes());
+        System.out.println("Total Calories: " + totalCalories + " (Limit: " + calorieLimit + ")");
+        System.out.println("Recipes:");
+        List<Recipe> recipes = plan.getRecipes();
+        int i = 1;
+        double perRecipeLimit = recipes.isEmpty() ? 0 : (double)calorieLimit / recipes.size();
+        for (Recipe recipe : recipes) {
+            double portion = utils.CalorieCalculator.recommendPortionSize(recipe, (int)perRecipeLimit);
+            System.out.printf("%d. %s (%d cal) - Recommended Portion: %.2f\n", i, recipe.getName(), recipe.getCalories(), portion);
+            i++;
+        }
+        Set<String> allTags = new HashSet<>();
+        for (Recipe recipe : recipes) {
+            allTags.addAll(recipe.getTags());
+        }
+        System.out.println("Tags: " + allTags);
+    }
+
+    private static void generateDailyMealPlan() {
+        System.out.println("\n--- Generate Daily Meal Plan ---");
+        System.out.print("Enter meal plan name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter calorie limit: ");
+        int calorieLimit = getIntInput();
+        Set<String> requiredTags = promptForMealPlanTags();
+        List<Recipe> allRecipes = recipeService.getAllRecipes();
+        if (allRecipes.isEmpty()) {
+            System.out.println("No recipes available to generate a meal plan.");
+            return;
+        }
+        DailyMealPlan dailyMealPlan = mealPlanService.generateDailyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+        displayMealPlanInfo(dailyMealPlan, calorieLimit);
+    }
+
+    private static void generateWeeklyMealPlan() {
+        System.out.println("\n--- Generate Weekly Meal Plan ---");
+        System.out.print("Enter meal plan name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter calorie limit: ");
+        int calorieLimit = getIntInput();
+        Set<String> requiredTags = promptForMealPlanTags();
+        List<Recipe> allRecipes = recipeService.getAllRecipes();
+        if (allRecipes.isEmpty()) {
+            System.out.println("No recipes available to generate a meal plan.");
+            return;
+        }
+
+        WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+        List<Recipe> recipes = weeklyMealPlan.getRecipes();
+        if (recipes.isEmpty()) {
+            System.out.println("No recipes selected for the meal plan.");
+            return;
+        }
+
+        System.out.println("\n==== Weekly Meal Plan: " + weeklyMealPlan.getName() + " ====");
+        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(weeklyMealPlan.getRecipes());
+        System.out.println("Total Calories: " + totalCalories + " (Limit: " + calorieLimit + ")");
+
+        int days = 7;
+        int recipesPerDay = Math.max(1, recipes.size() / days); 
+        for (int d = 0; d < days; d++) {
+            System.out.println("\nDay " + (d + 1) + ":");
+            int start = (d * recipesPerDay) % recipes.size(); 
+            int end = Math.min(start + recipesPerDay, recipes.size());
+            List<Recipe> dayRecipes = recipes.subList(start, end);
+            double perRecipeLimit = dayRecipes.isEmpty() ? 0 : (double)calorieLimit / dayRecipes.size();
+            int i = 1;
+            for (Recipe recipe : dayRecipes) {
+                double portion = utils.CalorieCalculator.recommendPortionSize(recipe, (int)perRecipeLimit);
+                System.out.printf("  %d. %s (%d cal) - Recommended Portion: %.2f\n", i, recipe.getName(), recipe.getCalories(), portion);
+                i++;
+            }
+        }
+        Set<String> allTags = new HashSet<>();
+        for (Recipe recipe : recipes) {
+            allTags.addAll(recipe.getTags());
+        }
+        System.out.println("\nTags: " + allTags);
+    }
 }
+
