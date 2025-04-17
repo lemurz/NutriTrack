@@ -521,7 +521,6 @@ public class Main {
     }
 
     private static void displayMealPlanInfo(MealPlan plan, int calorieLimit) {
-        System.out.println("\n==== Meal Plan: " + plan.getName() + " ====");
         int totalCalories = utils.CalorieCalculator.calculateTotalCalories(plan.getRecipes());
         System.out.println("Total Calories: " + totalCalories + " (Limit: " + calorieLimit + ")");
         System.out.println("Recipes:");
@@ -540,6 +539,11 @@ public class Main {
         System.out.println("Tags: " + allTags);
     }
 
+    private static void displayDailyMealPlan(DailyMealPlan dailyMealPlan, int calorieLimit) {
+        System.out.println("\n==== Daily Meal Plan: " + dailyMealPlan.getName() + " ====");
+        displayMealPlanInfo(dailyMealPlan, calorieLimit);
+    }
+
     private static void generateDailyMealPlan() {
         System.out.println("\n--- Generate Daily Meal Plan ---");
         System.out.print("Enter meal plan name: ");
@@ -553,33 +557,20 @@ public class Main {
             return;
         }
         DailyMealPlan dailyMealPlan = mealPlanService.generateDailyMealPlan(name, allRecipes, calorieLimit, requiredTags);
-        displayMealPlanInfo(dailyMealPlan, calorieLimit);
+        displayDailyMealPlan(dailyMealPlan, calorieLimit);
     }
 
-    private static void generateWeeklyMealPlan() {
-        System.out.println("\n--- Generate Weekly Meal Plan ---");
-        System.out.print("Enter meal plan name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter calorie limit: ");
-        int calorieLimit = getIntInput();
-        Set<String> requiredTags = promptForMealPlanTags();
-        List<Recipe> allRecipes = recipeService.getAllRecipes();
-        if (allRecipes.isEmpty()) {
-            System.out.println("No recipes available to generate a meal plan.");
-            return;
-        }
-
-        WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+    private static void displayWeeklyMealPlan(WeeklyMealPlan weeklyMealPlan, int calorieLimit) {
         List<Recipe> recipes = weeklyMealPlan.getRecipes();
         if (recipes.isEmpty()) {
             System.out.println("No recipes selected for the meal plan.");
             return;
         }
-
+    
         System.out.println("\n==== Weekly Meal Plan: " + weeklyMealPlan.getName() + " ====");
-        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(weeklyMealPlan.getRecipes());
+        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(recipes);
         System.out.println("Total Calories: " + totalCalories + " (Limit: " + calorieLimit + ")");
-
+    
         int days = 7;
         int recipesPerDay = Math.max(1, recipes.size() / days); 
         for (int d = 0; d < days; d++) {
@@ -600,6 +591,23 @@ public class Main {
             allTags.addAll(recipe.getTags());
         }
         System.out.println("\nTags: " + allTags);
+    }
+
+    private static void generateWeeklyMealPlan() {
+        System.out.println("\n--- Generate Weekly Meal Plan ---");
+        System.out.print("Enter meal plan name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter calorie limit: ");
+        int calorieLimit = getIntInput();
+        Set<String> requiredTags = promptForMealPlanTags();
+        List<Recipe> allRecipes = recipeService.getAllRecipes();
+        if (allRecipes.isEmpty()) {
+            System.out.println("No recipes available to generate a meal plan.");
+            return;
+        }
+
+        WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+        displayWeeklyMealPlan(weeklyMealPlan, calorieLimit);
     }
 }
 
