@@ -519,29 +519,28 @@ public class Main {
         }
         return requiredTags;
     }
+    
+    private static void displayDailyMealPlan(DailyMealPlan dailyMealPlan, int calorieLimit) {
+        System.out.println("\n==== Daily Meal Plan: " + dailyMealPlan.getName() + " ====");
 
-    private static void displayMealPlanInfo(MealPlan plan, int calorieLimit) {
-        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(plan.getRecipes());
+        int totalCalories = utils.CalorieCalculator.calculateTotalCalories(dailyMealPlan.getRecipes());
         System.out.println("Total Calories: " + totalCalories + " (Limit: " + calorieLimit + ")");
         System.out.println("Recipes:");
-        List<Recipe> recipes = plan.getRecipes();
-        int i = 1;
+        List<Recipe> recipes = dailyMealPlan.getRecipes();
+
+        int recipeNum = 1;
         double perRecipeLimit = recipes.isEmpty() ? 0 : (double)calorieLimit / recipes.size();
         for (Recipe recipe : recipes) {
             double portion = utils.CalorieCalculator.recommendPortionSize(recipe, (int)perRecipeLimit);
             System.out.printf("%d. %s (%d cal) - Recommended Portion: %.2f\n", i, recipe.getName(), recipe.getCalories(), portion);
-            i++;
+            recipeNum++;
         }
+
         Set<String> allTags = new HashSet<>();
         for (Recipe recipe : recipes) {
             allTags.addAll(recipe.getTags());
         }
         System.out.println("Tags: " + allTags);
-    }
-
-    private static void displayDailyMealPlan(DailyMealPlan dailyMealPlan, int calorieLimit) {
-        System.out.println("\n==== Daily Meal Plan: " + dailyMealPlan.getName() + " ====");
-        displayMealPlanInfo(dailyMealPlan, calorieLimit);
     }
 
     private static void generateDailyMealPlan() {
