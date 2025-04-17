@@ -493,10 +493,10 @@ public class Main {
             int choice = getValidatedIntInput();
             switch (choice) {
                 case 1:
-                    generateDailyMealPlan();
+                    generateMealPlan(false);
                     break;
                 case 2:
-                    generateWeeklyMealPlan();
+                    generateMealPlan(true);
                     break;
                 case 3:
                     viewAllRecipes();
@@ -519,7 +519,7 @@ public class Main {
         }
         return requiredTags;
     }
-    
+
     private static void displayDailyMealPlan(DailyMealPlan dailyMealPlan, int calorieLimit) {
         System.out.println("\n==== Daily Meal Plan: " + dailyMealPlan.getName() + " ====");
 
@@ -532,7 +532,7 @@ public class Main {
         double perRecipeLimit = recipes.isEmpty() ? 0 : (double)calorieLimit / recipes.size();
         for (Recipe recipe : recipes) {
             double portion = utils.CalorieCalculator.recommendPortionSize(recipe, (int)perRecipeLimit);
-            System.out.printf("%d. %s (%d cal) - Recommended Portion: %.2f\n", i, recipe.getName(), recipe.getCalories(), portion);
+            System.out.printf("%d. %s (%d cal) - Recommended Portion: %.2f\n", recipeNum, recipe.getName(), recipe.getCalories(), portion);
             recipeNum++;
         }
 
@@ -543,8 +543,9 @@ public class Main {
         System.out.println("Tags: " + allTags);
     }
 
-    private static void generateDailyMealPlan() {
-        System.out.println("\n--- Generate Daily Meal Plan ---");
+    private static void generateMealPlan(boolean isWeekly){
+        String planType = isWeekly ? "Weekly" : "Daily";
+        System.out.println("\n--- Generate " + planType + " Meal Plan ---");
         System.out.print("Enter meal plan name: ");
         String name = scanner.nextLine();
         System.out.print("Enter calorie limit: ");
@@ -555,8 +556,14 @@ public class Main {
             System.out.println("No recipes available to generate a meal plan.");
             return;
         }
-        DailyMealPlan dailyMealPlan = mealPlanService.generateDailyMealPlan(name, allRecipes, calorieLimit, requiredTags);
-        displayDailyMealPlan(dailyMealPlan, calorieLimit);
+    
+        if (isWeekly) {
+            WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+            displayWeeklyMealPlan(weeklyMealPlan, calorieLimit);
+        } else {
+            DailyMealPlan dailyMealPlan = mealPlanService.generateDailyMealPlan(name, allRecipes, calorieLimit, requiredTags);
+            displayDailyMealPlan(dailyMealPlan, calorieLimit);
+        }
     }
 
     private static void displayWeeklyMealPlan(WeeklyMealPlan weeklyMealPlan, int calorieLimit) {
@@ -590,23 +597,6 @@ public class Main {
             allTags.addAll(recipe.getTags());
         }
         System.out.println("\nTags: " + allTags);
-    }
-
-    private static void generateWeeklyMealPlan() {
-        System.out.println("\n--- Generate Weekly Meal Plan ---");
-        System.out.print("Enter meal plan name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter calorie limit: ");
-        int calorieLimit = getIntInput();
-        Set<String> requiredTags = promptForMealPlanTags();
-        List<Recipe> allRecipes = recipeService.getAllRecipes();
-        if (allRecipes.isEmpty()) {
-            System.out.println("No recipes available to generate a meal plan.");
-            return;
-        }
-
-        WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan(name, allRecipes, calorieLimit, requiredTags);
-        displayWeeklyMealPlan(weeklyMealPlan, calorieLimit);
     }
 }
 
