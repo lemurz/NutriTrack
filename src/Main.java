@@ -1,9 +1,9 @@
 import services.*;
 import models.*;
 import java.util.*;
-import managers.RecipeManager;
-import managers.IngredientManager;
-import managers.MealPlanManager;
+import managers.*;
+import csv.*;
+
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -77,64 +77,8 @@ public class Main {
     }
 
     private static void addSampleData() {
-        Ingredient egg = new Ingredient("Egg", 2, 78, 6, 1, 5);
-        Ingredient milk = new Ingredient("Milk", 200, 42, 3.4, 5, 1);
-        Ingredient flour = new Ingredient("Flour", 100, 364, 10, 76, 1);
-        Ingredient sugar = new Ingredient("Sugar", 50, 387, 0, 100, 0);
-    
-        ingredientService.addOrUpdateIngredient(egg);
-        ingredientService.addOrUpdateIngredient(milk);
-        ingredientService.addOrUpdateIngredient(flour);
-        ingredientService.addOrUpdateIngredient(sugar);
-    
-        List<Ingredient> pancakeIngredients = Arrays.asList(
-                new Ingredient("Egg", 2, 78, 6, 1, 5),
-                new Ingredient("Milk", 200, 42, 3.4, 5, 1),
-                new Ingredient("Flour", 100, 364, 10, 76, 1),
-                new Ingredient("Sugar", 20, 387, 0, 100, 0)
-        );
-    
-        List<String> pancakeSteps = Arrays.asList(
-                "Mix all ingredients together.",
-                "Heat a pan and pour batter.",
-                "Cook until golden brown on both sides."
-        );
-    
-        Set<String> pancakeTags = new HashSet<>(Arrays.asList("breakfast", "sweet", "easy"));
-        Recipe pancake = new Recipe("Pancake", pancakeIngredients, pancakeSteps, 350, pancakeTags);
-    
-        recipeService.addRecipe(pancake);
-    
-        List<Ingredient> omeletteIngredients = Arrays.asList(
-                new Ingredient("Egg", 3, 78, 6, 1, 5),
-                new Ingredient("Milk", 50, 42, 3.4, 5, 1)
-        );
-    
-        List<String> omeletteSteps = Arrays.asList(
-                "Beat eggs with milk.",
-                "Pour mixture into a heated pan.",
-                "Cook until set."
-        );
-    
-        Set<String> omeletteTags = new HashSet<>(Arrays.asList("breakfast", "protein-rich"));
-        Recipe omelette = new Recipe("Omelette", omeletteIngredients, omeletteSteps, 250, omeletteTags);
-    
-        recipeService.addRecipe(omelette);
-
-        List<Ingredient> smoothieIngredients = Arrays.asList(
-                new Ingredient("Milk", 200, 42, 3.4, 5, 1),
-                new Ingredient("Sugar", 10, 387, 0, 100, 0)
-        );
-    
-        List<String> smoothieSteps = Arrays.asList(
-                "Blend milk and sugar together.",
-                "Serve chilled."
-        );
-    
-        Set<String> smoothieTags = new HashSet<>(Arrays.asList("drink", "sweet", "refreshing"));
-        Recipe smoothie = new Recipe("Smoothie", smoothieIngredients, smoothieSteps, 150, smoothieTags);
-    
-        recipeService.addRecipe(smoothie);
+        CSVReader csvReader = new CSVReader(ingredientService, recipeService);
+        csvReader.importDataFromCSV("f:\\IUT\\Third Sem\\OOP-II\\NutriTrack\\data\\sample_data.csv");
     }
 }
 

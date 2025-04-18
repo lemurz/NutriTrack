@@ -13,21 +13,24 @@ public class MealPlanService {
         return plan;
     }
 
-    public WeeklyMealPlan generateWeeklyMealPlan(String name, List<Recipe> recipes, int calorieLimit, Set<String> requiredTags) {
-        List<Recipe> filtered = filterRecipes(recipes, calorieLimit, requiredTags);
-        List<DailyMealPlan> dailyPlans = new ArrayList<>();
-        int days = 7;
-        int chunkSize = (int) Math.ceil(filtered.size() / (double) days);
-        for (int i = 0; i < days; i++) {
-            int start = i * chunkSize;
-            int end = Math.min(start + chunkSize, filtered.size());
-            if (start < end) {
-                dailyPlans.add(new DailyMealPlan(name + " Day " + (i+1), filtered.subList(start, end)));
+    public WeeklyMealPlan generateWeeklyMealPlan(String name, List<Recipe> allRecipes, int calorieLimit, Set<String> requiredTags) {
+        List<DailyMealPlan> dailyMealPlans = new ArrayList<>();
+        int recipeIndex = 0;
+        int totalRecipes = allRecipes.size();
+
+        for (int day = 0; day < 7; day++) {
+            List<Recipe> dailyRecipes = new ArrayList<>();
+            
+            if (totalRecipes > 0) {
+                dailyRecipes.add(allRecipes.get(recipeIndex));
+                recipeIndex = (recipeIndex + 1) % totalRecipes; 
             }
+
+            DailyMealPlan dailyMealPlan = new DailyMealPlan("Day " + (day + 1), dailyRecipes);
+            dailyMealPlans.add(dailyMealPlan);
         }
-        WeeklyMealPlan plan = new WeeklyMealPlan(name, dailyPlans);
-        weeklyMealPlans.put(name, plan);
-        return plan;
+
+        return new WeeklyMealPlan(name, dailyMealPlans);
     }
 
     private List<Recipe> filterRecipes(List<Recipe> recipes, int calorieLimit, Set<String> requiredTags) {

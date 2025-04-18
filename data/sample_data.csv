@@ -1,0 +1,7 @@
+ingredient,Egg,2,78,6,1,5
+ingredient,Milk,200,42,3.4,5,1
+ingredient,Flour,100,364,10,76,1
+ingredient,Sugar,50,194,0,50,0
+recipe,Pancake,Egg:2:78:6:1:5;Milk:200:42:3.4:5:1;Flour:100:364:10:76:1;Sugar:50:194:0:50:0,"Mix all ingredients together.;Heat a pan and pour batter.;Cook until golden brown on both sides.",breakfast;sweet;easy,600
+recipe,Omelette,Egg:2:78:6:1:5;Milk:50:21:1.7:2.5:0.5,"Beat eggs and milk together.;Pour into a heated pan.;Cook until set.",breakfast;quick,200
+recipe,Cake,Flour:200:728:20:152:2;Sugar:100:388:0:100:0;Egg:3:117:18:3:7.5,"Mix flour and sugar.;Add eggs and mix well.;Bake in oven.",dessert;sweet,1200
