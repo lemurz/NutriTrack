@@ -54,7 +54,7 @@ public class Main {
     }
 
     private static void printMainMenu() {
-        System.out.println("\n==== Recipe Management System ====");
+        System.out.println("\n==== Welcome to NutriTrack ====");
         System.out.println("1. Add Recipe");
         System.out.println("2. Edit Recipe");
         System.out.println("3. Delete Recipe");

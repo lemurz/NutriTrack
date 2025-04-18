@@ -90,6 +90,11 @@ public class MealPlanManager {
             displayDailyMealPlan(day, calorieLimit);
             dayNum++;
         }
+
+        while (dayNum <= 7) {
+            System.out.println("\nDay " + dayNum + ": No meals planned.");
+            dayNum++;
+        }
     }
 
     private void viewAllRecipes() {
