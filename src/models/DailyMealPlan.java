@@ -31,10 +31,10 @@ public class DailyMealPlan extends MealPlan {
         int totalCalories = CalorieCalculator.calculateTotalCalories(getRecipes());
         System.out.println("Total Calories: " + totalCalories);
         System.out.println("Recipes:");
-        int i = 1;
+        int recipeNum = 1;
         for (Recipe recipe : getRecipes()) {
-            System.out.println(i + ". " + recipe.getName() + " (" + recipe.getCalories() + " cal)");
-            i++;
+            System.out.println(recipeNum + ". " + recipe.getName() + " (" + recipe.getCalories() + " cal)");
+            recipeNum++;
         }
     }
 }
