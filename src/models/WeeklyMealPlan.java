@@ -5,21 +5,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WeeklyMealPlan extends MealPlan {
-    public WeeklyMealPlan(String name, List<Recipe> recipes) {
-        super(name, recipes);
+    private List<DailyMealPlan> dailyPlans;
+
+    public WeeklyMealPlan(String name, List<DailyMealPlan> dailyPlans) {
+        super(name, null);
+        this.dailyPlans = dailyPlans;
     }
 
     @Override
     public int getCalories() {
-        return recipes.stream().mapToInt(Recipe::getCalories).sum();
+        return dailyPlans.stream().mapToInt(DailyMealPlan::getCalories).sum();
     }
 
     @Override
     public Set<String> getTags() {
         Set<String> tags = new HashSet<>();
-        for (Recipe recipe : recipes) {
-            tags.addAll(recipe.getTags());
+        for (DailyMealPlan plan : dailyPlans) {
+            tags.addAll(plan.getTags());
         }
         return tags;
+    }
+
+    public List<DailyMealPlan> getDailyMealPlans() {
+        return dailyPlans;
     }
 }
