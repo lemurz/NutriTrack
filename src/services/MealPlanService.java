@@ -4,14 +4,17 @@ import models.*;
 import java.util.*;
 
 public class MealPlanService {
+    private final Map<String, DailyMealPlan> dailyMealPlans = new HashMap<>();
+    private final Map<String, WeeklyMealPlan> weeklyMealPlans = new HashMap<>();
     public DailyMealPlan generateDailyMealPlan(String name, List<Recipe> recipes, int calorieLimit, Set<String> requiredTags) {
         List<Recipe> filtered = filterRecipes(recipes, calorieLimit, requiredTags);
-        return new DailyMealPlan(name, filtered);
+        DailyMealPlan plan = new DailyMealPlan(name, filtered);
+        dailyMealPlans.put(name, plan);
+        return plan;
     }
 
     public WeeklyMealPlan generateWeeklyMealPlan(String name, List<Recipe> recipes, int calorieLimit, Set<String> requiredTags) {
         List<Recipe> filtered = filterRecipes(recipes, calorieLimit, requiredTags);
-        // Split filtered recipes into 7 daily meal plans (simple round-robin or chunking)
         List<DailyMealPlan> dailyPlans = new ArrayList<>();
         int days = 7;
         int chunkSize = (int) Math.ceil(filtered.size() / (double) days);
@@ -22,7 +25,9 @@ public class MealPlanService {
                 dailyPlans.add(new DailyMealPlan(name + " Day " + (i+1), filtered.subList(start, end)));
             }
         }
-        return new WeeklyMealPlan(name, dailyPlans);
+        WeeklyMealPlan plan = new WeeklyMealPlan(name, dailyPlans);
+        weeklyMealPlans.put(name, plan);
+        return plan;
     }
 
     private List<Recipe> filterRecipes(List<Recipe> recipes, int calorieLimit, Set<String> requiredTags) {
@@ -35,5 +40,22 @@ public class MealPlanService {
             }
         }
         return filtered;
+    }
+
+    public List<DailyMealPlan> getAllDailyMealPlans() {
+        return new ArrayList<>(dailyMealPlans.values());
+    }
+
+    public List<WeeklyMealPlan> getAllWeeklyMealPlans() {
+        return new ArrayList<>(weeklyMealPlans.values());
+    }
+
+    public MealPlan viewMealPlan(String name) {
+        if (dailyMealPlans.containsKey(name)) {
+            return dailyMealPlans.get(name);
+        } else if (weeklyMealPlans.containsKey(name)) {
+            return weeklyMealPlans.get(name);
+        }
+        return null;
     }
 }

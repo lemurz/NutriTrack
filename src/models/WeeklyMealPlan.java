@@ -29,4 +29,21 @@ public class WeeklyMealPlan extends MealPlan {
     public List<DailyMealPlan> getDailyMealPlans() {
         return dailyPlans;
     }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("\n==== Weekly Meal Plan: " + getName() + " ====");
+        int totalCalories = dailyPlans.stream().mapToInt(DailyMealPlan::getCalories).sum();
+        System.out.println("Total Calories: " + totalCalories);
+        int dayNum = 1;
+        for (DailyMealPlan day : dailyPlans) {
+            System.out.println("\nDay " + dayNum + ":");
+            day.displayDetails();
+            dayNum++;
+        }
+        while (dayNum <= 7) {
+            System.out.println("\nDay " + dayNum + ": No meals planned.");
+            dayNum++;
+        }
+    }
 }

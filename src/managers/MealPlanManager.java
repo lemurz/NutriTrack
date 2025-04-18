@@ -23,6 +23,7 @@ public class MealPlanManager {
             System.out.println("1. Generate Daily Meal Plan");
             System.out.println("2. Generate Weekly Meal Plan");
             System.out.println("3. View All Recipes");
+            System.out.println("4. View Existing Meal Plans");
             System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
             int choice = getValidatedIntInput();
@@ -35,6 +36,9 @@ public class MealPlanManager {
                     break;
                 case 3:
                     viewAllRecipes();
+                    break;
+                case 4:
+                    viewExistingMealPlans();
                     break;
                 case 0:
                     back = true;
@@ -50,13 +54,13 @@ public class MealPlanManager {
         int calorieLimit = getValidatedIntInput();
         Set<String> requiredTags = promptForMealPlanTags();
         
+        MealPlan mealPlan;
         if (weekly) {
-            WeeklyMealPlan weeklyMealPlan = mealPlanService.generateWeeklyMealPlan("Weekly Plan", recipeService.getAllRecipes(), calorieLimit, requiredTags);
-            displayWeeklyMealPlan(weeklyMealPlan, calorieLimit);
+            mealPlan = mealPlanService.generateWeeklyMealPlan("Weekly Plan", recipeService.getAllRecipes(), calorieLimit, requiredTags);
         } else {
-            DailyMealPlan dailyMealPlan = mealPlanService.generateDailyMealPlan("Daily Plan", recipeService.getAllRecipes(), calorieLimit, requiredTags);
-            displayDailyMealPlan(dailyMealPlan, calorieLimit);
+            mealPlan = mealPlanService.generateDailyMealPlan("Daily Plan", recipeService.getAllRecipes(), calorieLimit, requiredTags);
         }
+        mealPlan.displayDetails();
     }
 
     private Set<String> promptForMealPlanTags() {
@@ -67,34 +71,6 @@ public class MealPlanManager {
             requiredTags.addAll(Arrays.asList(tagsInput.split(",\\s*")));
         }
         return requiredTags;
-    }
-
-    private void displayDailyMealPlan(DailyMealPlan dailyMealPlan, int calorieLimit) {
-        System.out.println("\n==== Daily Meal Plan: " + dailyMealPlan.getName() + " ====");
-        int totalCalories = CalorieCalculator.calculateTotalCalories(dailyMealPlan.getRecipes());
-        System.out.println("Total Calories: " + totalCalories + " / " + calorieLimit);
-        System.out.println("Recipes:");
-        int i = 1;
-        for (Recipe recipe : dailyMealPlan.getRecipes()) {
-            System.out.println(i + ". " + recipe.getName() + " (" + recipe.getCalories() + " cal)");
-            i++;
-        }
-    }
-
-    private void displayWeeklyMealPlan(WeeklyMealPlan weeklyMealPlan, int calorieLimit) {
-        System.out.println("\n==== Weekly Meal Plan: " + weeklyMealPlan.getName() + " ====");
-        List<DailyMealPlan> days = weeklyMealPlan.getDailyMealPlans();
-        int dayNum = 1;
-        for (DailyMealPlan day : days) {
-            System.out.println("\nDay " + dayNum + ":");
-            displayDailyMealPlan(day, calorieLimit);
-            dayNum++;
-        }
-
-        while (dayNum <= 7) {
-            System.out.println("\nDay " + dayNum + ": No meals planned.");
-            dayNum++;
-        }
     }
 
     private void viewAllRecipes() {
@@ -108,6 +84,38 @@ public class MealPlanManager {
             System.out.println(recipeNum + ". " + recipe.getName());
             recipeNum++;
         }
+    }
+
+    private void viewExistingMealPlans() {
+        System.out.println("\n--- Existing Meal Plans ---");
+        List<DailyMealPlan> dailyPlans = mealPlanService.getAllDailyMealPlans();
+        List<WeeklyMealPlan> weeklyPlans = mealPlanService.getAllWeeklyMealPlans();
+        if (dailyPlans.isEmpty() && weeklyPlans.isEmpty()) {
+            System.out.println("No meal plans found.");
+            return;
+        }
+        int num = 1;
+        Map<Integer, MealPlan> planIndex = new HashMap<>();
+        num = listMealPlans(dailyPlans, num, planIndex);
+        listMealPlans(weeklyPlans, num, planIndex);
+        System.out.print("Enter the number of the meal plan to view details (0 to go back): ");
+        int choice = getValidatedIntInput();
+        if (choice == 0) return;
+        MealPlan selectedPlan = planIndex.get(choice);
+        if (selectedPlan == null) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+        selectedPlan.displayDetails();
+    }
+
+    private int listMealPlans(List<? extends MealPlan> plans, int startNum, Map<Integer, MealPlan> planIndex) {
+        for (MealPlan plan : plans) {
+            System.out.println(startNum + ". " + plan.getName());
+            planIndex.put(startNum, plan);
+            startNum++;
+        }
+        return startNum;
     }
 
     private int getValidatedIntInput() {

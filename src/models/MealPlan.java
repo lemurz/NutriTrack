@@ -28,4 +28,6 @@ public abstract class MealPlan implements CalorieTrackable, Taggable {
     public void setRecipes(List<Recipe> recipes) {
         this.recipes = recipes;
     }
+
+    public abstract void displayDetails();
 }

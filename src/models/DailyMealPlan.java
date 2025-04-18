@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
+import utils.CalorieCalculator;
+
 public class DailyMealPlan extends MealPlan {
     public DailyMealPlan(String name, List<Recipe> recipes) {
         super(name, recipes);
@@ -21,5 +23,18 @@ public class DailyMealPlan extends MealPlan {
             tags.addAll(recipe.getTags());
         }
         return tags;
+    }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("\n==== Daily Meal Plan: " + getName() + " ====");
+        int totalCalories = CalorieCalculator.calculateTotalCalories(getRecipes());
+        System.out.println("Total Calories: " + totalCalories);
+        System.out.println("Recipes:");
+        int i = 1;
+        for (Recipe recipe : getRecipes()) {
+            System.out.println(i + ". " + recipe.getName() + " (" + recipe.getCalories() + " cal)");
+            i++;
+        }
     }
 }
